@@ -16,7 +16,7 @@ function registerUser() {
         var response = "";
         $.ajax({
             type: "POST",
-            url: "http://gradebook.somee.com/api/Account/Register",
+            url: "https://gradebook.somee.com/api/Account/Register",
             data: newUser,
             success: function (data) {
                 console.log(data);
@@ -48,7 +48,7 @@ function loginUser() {
         var response = "";
         $.ajax({
             type: "POST",
-            url: "http://gradebook.somee.com/token",
+            url: "https://gradebook.somee.com/token",
             data: user,
             dataType: "json",
             success: function (data) {
