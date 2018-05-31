@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>GradeBook</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300i,400,900,900i" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.0/js.cookie.min.js'></script>
+</head>
+<body>
+        <header>
+            <div class="container">
+                <nav>
+                        <ul>
+                            <li class="logo"><a href="http://"><img src="logo.svg" alt="Logo - GradeBook"><span>GradeBook</span></a></li>
+                            <li><a href="http://">Strona główna</a></li>
+                            <li><a href="http://">Rejestracja</a></li>
+                            <li><a href="http://">Logowanie</a></li>
+                            <li><a href="http://">Inne</a></li>
+                            <li class="logout"><a href="http://"><a href="http://"><img src="logout.svg" alt="Wyloguj - GradeBook"><span>Wyloguj się</span></a></a></li>
+                        </ul>
+                    </nav>
+            </div>
+        </header>
+    <div class="container">
+            <section id="forms">
+                <div class="form">
+                        <h2>Rejestracja</h2>
+                        <form action="#" method="post" id="registerForm">
+                                <label for="email">E-mail:</label>
+                                <input type="email" name="email" class="email">
+                                <label for="password">Hasło:</label>
+                                <input type="password" name="password" class="password">
+                                <input type="submit" value="Zarejestruj się">
+                        </form>
+                </div>
+                
+                <div class="form">
+                        <h2>Logowanie</h2>
+                    <form action="#" method="post" id="loginForm">
+                        <label for="email">E-mail:</label>
+                        <input type="email" name="email" class="email">
+                        <label for="password">Hasło:</label>
+                        <input type="password" name="password" class="password">
+                        <input type="submit" value="Zaloguj się">
+                    </form>
+                </div>
+            </section>
+            <section id="loggedSection">
+                <h2>Jesteś zalogowany!</h2>
+                    <input type="button" id="btn" onclick="GetAll('http://gradebook.somee.com/api/OldStudents')" value="GetAll" /> 
+                    <br>
+                    <input type="button" id="btn" onclick="GetById('http://gradebook.somee.com/api/OldStudents',2)" value="GetById (ID=2)" /> 
+                    <br> 
+                    <section id="mySection"></section>
+                    <br>
+            </section>
+                
+    </div>
+
+    <footer>
+            <div class="container">
+                    <nav>
+                            <ul>
+                                <li class="logo"><a href="http://"><img src="logo.svg" alt="Logo - GradeBook"><span>GradeBook</span></a></li>
+                                <li><a href="http://">Strona główna</a></li>
+                                <li><a href="http://">Rejestracja</a></li>
+                                <li><a href="http://">Logowanie</a></li>
+                                <li><a href="http://">Inne</a></li>
+                            </ul>
+                        </nav>
+                </div>
+    </footer>
+    
+<script src="main.js"></script>
+</body>
+</html>

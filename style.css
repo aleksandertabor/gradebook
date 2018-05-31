@@ -1,0 +1,94 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Variables */
+
+:root {
+
+}
+
+.container {
+    width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    background-color: aqua;
+}
+
+nav ul {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+nav ul li {
+    flex: 1;
+    list-style-type: none;
+    margin: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+nav ul li a {
+    display: block;
+    height: 100%;
+    text-decoration: none;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    padding: 5px;
+}
+
+nav ul li:not(:last-child) {
+
+}
+
+
+nav ul li.logo {
+    flex: 1;
+    background-color: transparent;
+    justify-content: flex-start;
+}
+
+nav ul li.logout { 
+    flex: 2;
+}
+
+.logo img, .logout img {
+    width: 50px;
+    height: 50px;
+}
+
+#forms {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#forms .form {
+    background-color: tomato;
+    flex: 1;
+    height: 250px;
+    border: 2px solid black;
+    padding: 10px;
+}
+
+#loggedSection {
+    display: none;
+}
+
+
+
+/* Footer */
+
+footer {
+    background-color: palegoldenrod;
+}
