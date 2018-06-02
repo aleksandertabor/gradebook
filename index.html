@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,49 +16,75 @@
                 <nav>
                         <ul>
                             <li class="logo"><a href="http://"><img src="logo.svg" alt="Logo - GradeBook"><span>GradeBook</span></a></li>
-                            <li><a href="http://">Strona główna</a></li>
-                            <li><a href="http://">Rejestracja</a></li>
-                            <li><a href="http://">Logowanie</a></li>
-                            <li><a href="http://">Inne</a></li>
-                            <li class="logout"><a href="http://"><a href="http://"><img src="logout.svg" alt="Wyloguj - GradeBook"><span>Wyloguj się</span></a></a></li>
+                            <li><a href="http://"></a></li>
+                            <li><a href="http://"></a></li>
+                            <li><a href="http://"></a></li>
+                            <li><a href="http://"></a></li>
+                            <li class="logout"><a href="http://"><img src="logout.svg" alt="Wyloguj - GradeBook"><span>Wyloguj się</span></a></li>
                         </ul>
                     </nav>
             </div>
         </header>
     <div class="container">
             <section id="forms">
-                <div class="form">
+                <div class="form registerForm_Wrapper">
                         <h2>Rejestracja</h2>
                         <form action="#" method="post" id="registerForm">
                                 <label for="email">E-mail:</label>
-                                <input type="email" name="email" class="email">
+                                <input type="email" name="email" class="email" placeholder="jan.kowalski@wp.pl">
                                 <label for="password">Hasło:</label>
                                 <input type="password" name="password" class="password">
                                 <input type="submit" value="Zarejestruj się">
                         </form>
+                    <p class="validation-error"></p>
                 </div>
                 
-                <div class="form">
+                <div class="form loginForm_Wrapper">
                         <h2>Logowanie</h2>
                     <form action="#" method="post" id="loginForm">
                         <label for="email">E-mail:</label>
-                        <input type="email" name="email" class="email">
+                        <input type="email" name="email" class="email" placeholder="jan.kowalski@wp.pl">
                         <label for="password">Hasło:</label>
                         <input type="password" name="password" class="password">
                         <input type="submit" value="Zaloguj się">
                     </form>
+                    <p class="validation-error"></p>
                 </div>
             </section>
             <section id="loggedSection">
                 <h2>Jesteś zalogowany!</h2>
-                    <input type="button" id="btn" onclick="GetAll('https://gradebook.somee.com/api/OldStudents')" value="GetAll" /> 
+                    <input type="button" id="btn" onclick="GetAll('http://gradebook.somee.com/api/OldStudents')" value="GetAll" /> 
                     <br>
-                    <input type="button" id="btn" onclick="GetById('https://gradebook.somee.com/api/OldStudents',2)" value="GetById (ID=2)" /> 
+                    <input type="button" id="btn" onclick="GetById('http://gradebook.somee.com/api/OldStudents',2)" value="GetById (ID=2)" /> 
                     <br> 
                     <section id="mySection"></section>
                     <br>
-            </section>
+                    <div class="tabs">
+
+                        <ul class="tab-list">
+                          <li class="active"><a class="tab-control students" href="#tab-1"><h3>Uczniowie</h3></a></li>
+                          <li class=""><a class="tab-control" href="#tab-2"><h3>Oceny</h3></a></li>
+                          <li class=""><a class="tab-control" href="#tab-3"><h3>Twoje dane</h3></a></li>
+                        </ul>
                 
+                        <div class="tab-panel active" id="tab-1">
+                            <div id="students">
+
+                            </div>
+                            <a href="#" id="printStudents"><img src="printer.svg" alt="Wydrukuj listę studentów"></a>
+                           <p></p>
+                        </div>
+                
+                        <div class="tab-panel grades" id="tab-2">
+                            <p></p>
+                        </div>
+                
+                        <div class="tab-panel your-data" id="tab-3">
+                            <p></p>
+                        </div>
+                
+                      </div>
+            </section>     
     </div>
 
     <footer>
@@ -66,14 +92,20 @@
                     <nav>
                             <ul>
                                 <li class="logo"><a href="http://"><img src="logo.svg" alt="Logo - GradeBook"><span>GradeBook</span></a></li>
-                                <li><a href="http://">Strona główna</a></li>
-                                <li><a href="http://">Rejestracja</a></li>
-                                <li><a href="http://">Logowanie</a></li>
-                                <li><a href="http://">Inne</a></li>
+                                <li><a href="http://"></a></li>
+                                <li><a href="http://"></a></li>
+                                <li><a href="http://"></a></li>
+                                <li><a href="http://"></a></li>
                             </ul>
-                        </nav>
+                    </nav>
+                    <p>&copy; 2018</p>
                 </div>
     </footer>
+    <div class="bouncing-loader">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
     
 <script src="main.js"></script>
 </body>
