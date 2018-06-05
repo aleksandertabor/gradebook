@@ -36,7 +36,7 @@
                                 <input type="password" name="password" class="password">
                                 <input type="submit" value="Zarejestruj się">
                         </form>
-                    <p class="validation-error"></p>
+                    <p class="validation"></p>
                 </div>
                 
                 <div class="form loginForm_Wrapper">
@@ -48,17 +48,11 @@
                         <input type="password" name="password" class="password">
                         <input type="submit" value="Zaloguj się">
                     </form>
-                    <p class="validation-error"></p>
+                    <p class="validation"></p>
                 </div>
             </section>
             <section id="loggedSection">
                 <h2>Jesteś zalogowany!</h2>
-                    <input type="button" id="btn" onclick="GetAll('http://gradebook.somee.com/api/OldStudents')" value="GetAll" /> 
-                    <br>
-                    <input type="button" id="btn" onclick="GetById('http://gradebook.somee.com/api/OldStudents',2)" value="GetById (ID=2)" /> 
-                    <br> 
-                    <section id="mySection"></section>
-                    <br>
                     <div class="tabs">
 
                         <ul class="tab-list">

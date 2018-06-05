@@ -1,9 +1,95 @@
 var sdata="";
 var bearer ="";
 
-if (Cookies.get('loggedIn') ) {
-    bearer = Cookies.get('loggedIn');
+
+// Variables
+const loader = $('.bouncing-loader');
+
+
+
+
+const server = 'http://gradebookx.azurewebsites.net/';
+
+
+class User {
+
+    constructor(bearer) {
+        this._bearer = bearer;
+    }
+
+    get bearer() {
+        return this._bearer;
+    }
+
+    set bearer(bearer) {
+        this._bearer = bearer;
+    }
+
+    postAction(url, data, beforeSend, onSuccess, onError) {
+        console.log(data);
+        $.ajax({
+            type: "POST",
+            url: server + url,
+            data: data,
+            beforeSend: function () {
+                beforeSend();
+            },
+            success: function (data) {
+                data = JSON.parse(JSON.stringify(data));
+                console.log(data);
+                onSuccess(data);
+            },
+            failure: function (data) {
+                console.log("failure");
+                alert(response);
+            },
+            error: function (data) {
+                data = JSON.parse(JSON.stringify(data));
+                console.log(data);
+                onError(data);
+            }
+        });
+
+    }
+
+    getAction(url, beforeSend, onSuccess, onError) {
+        $.ajax({
+            type: "GET",
+            url: server + url,
+            headers: {
+                'Authorization': 'Bearer ' + this._bearer
+            },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            beforeSend: function () {
+                beforeSend();
+            },
+            success: function (data) {
+            data = JSON.parse(JSON.stringify(data));
+    
+            onSuccess(data);
+    
+            },
+            failure: function (data) {
+                alert(response.responseText);
+            },
+            error: function (data) {
+                onError(data);
+            }
+        });
+    }
+    
 }
+
+
+var user = new User();
+
+
+
+if (sessionStorage.getItem('loggedIn') ) {
+    bearer = sessionStorage.getItem('loggedIn');
+}
+
 
 
 //! Functions
@@ -18,34 +104,22 @@ function registerUser() {
             ConfirmPassword: $(".password", this).val()
         };
         console.log(newUser);
-        var response = "";
-        $.ajax({
-            type: "POST",
-            url: "http://gradebook.somee.com/api/Account/Register",
-            data: newUser,
-            beforeSend: function () {
-                $(".bouncing-loader").css("display", "flex");
-            },
-            success: function (data) {
-                console.log(data);
-                response = JSON.parse(JSON.stringify(data));
-                console.log("Registered ");
-                $(this).find("input").val("");
-                $(".bouncing-loader").hide();
-            },
-            failure: function (response) {
-                console.log("failure");
-                alert(response);
-            },
-            error: function (response) {
-                sResponse = JSON.parse(JSON.stringify(response));
-                console.log("error");
-                $('.registerForm_Wrapper .validation-error').html('<img src="error.svg" alt="Błąd!">' + sResponse.responseJSON.ModelState[""]["0"]);
-                $('.registerForm_Wrapper .validation-error').fadeIn();
-                console.table(sResponse);
-                $(".bouncing-loader").hide();
-            }
+        user.postAction('api/Account/Register', newUser, function() {
+            loader.css("display", "flex");
+        }, function() {
+            $(this).find("input").val("");
+            console.log("Registered ");
+            $('.registerForm_Wrapper').slideToggle();
+            $('.loginForm_Wrapper .validation').html('<img src="success.svg" alt="Sukces!"><span class="validation-success"> Twoje konto zostało zarejestrowane. Możesz się zalogować.</span>');
+            $('.loginForm_Wrapper .validation').fadeIn();
+            $('input.email').focus();
+            loader.hide();
+        }, function(data) {
+            console.log("nie dziala");
+            $('.registerForm_Wrapper .validation').html('<img src="error.svg" alt="Błąd!"><span class="validation-error">' + data.responseJSON.ModelState[""]["0"] + '</span>');
+            $('.registerForm_Wrapper .validation').fadeIn();
         });
+        
     });
 }
 
@@ -53,49 +127,26 @@ function registerUser() {
 function loginUser() {
     $("#loginForm").submit(function (e) { 
         e.preventDefault();
-        var user ={
+        var logUser ={
             grant_type:'password',
             username: $(".email", this).val(),
             password: $(".password", this).val()
         };
-        console.log(user);
-        var response = "";
-        $.ajax({
-            type: "POST",
-            url: "http://gradebook.somee.com/token",
-            data: user,
-            beforeSend: function () {
-                $(".bouncing-loader").css("display", "flex");
-            },
-            success: function (data) {
-                console.log(data);
-                response = JSON.parse(JSON.stringify(data));
-                console.log("Logged in ");
-                bearer = JSON.parse(JSON.stringify(data));
-                bearer = bearer.access_token;
-                var SixtyMinutes = new Date(new Date().getTime() + 60 * 60 * 1000);
-                Cookies.set('loggedIn', bearer, { expires: SixtyMinutes });
-                loggedIn();
-                getStudents();
-                $(".bouncing-loader").hide();
-                $("#loginForm input.email, #loginForm input.password").val("");
-            },
-            failure: function (response) {
-                console.log(JSON.stringify(response));
-                console.log("failure");
-                $('.loginForm_Wrapper').append('<p>' + response + '</p>');
-                alert(response);
-                $(".bouncing-loader").hide();
-            },
-            error: function (response) {
-                sResponse = JSON.parse(JSON.stringify(response));
-                console.log("error");
-                $('.loginForm_Wrapper .validation-error').html('<img src="error.svg" alt="Błąd!">' + sResponse.responseJSON.error_description);
-                $('.loginForm_Wrapper .validation-error').fadeIn();
-                console.table(sResponse);
-                $(".bouncing-loader").hide();
-            }
+        console.log(logUser);
+        user.postAction('token', logUser, function() {
+            loader.css("display", "flex");
+        }, function(data) {
+            user._bearer = data.bearer;
+            sessionStorage.setItem('loggedIn', user._bearer);
+            loggedIn();
+            getStudents();
+            $("#loginForm input.email, #loginForm input.password").val("");
+            $('.loginForm_Wrapper .validation').fadeIn();
+            loader.hide();
+        }, function() {
+            console.log("nie dziala");
         });
+        
     });
 }
 
@@ -103,81 +154,43 @@ function loginUser() {
 function logout() {
     $(".logout").click(function (e) { 
         e.preventDefault();
-        $.ajax({
-            type: "POST",
-            url: "http://gradebook.somee.com/api/Account/Logout",
-            headers: {
-                'Authorization': 'Bearer ' + bearer
-            },
-            //data: newUser,
-            beforeSend: function () {
-                $(".bouncing-loader").css("display", "flex");
-            },
-            success: function (data) {
-                console.log(data);
-                response = JSON.parse(JSON.stringify(data));
-                console.log("Wylogowano ");
-                $("#forms").fadeIn();
-                $(".logout").fadeOut();
-                $("#loggedSection").fadeOut();
-                $(".bouncing-loader").hide();
-            },
-            failure: function (response) {
-                console.log("failure");
-                alert(response);
-            },
-            error: function (response) {
-                sResponse = JSON.parse(JSON.stringify(response));
-                console.log("error");
-                console.table(sResponse);
-                $(".bouncing-loader").hide();
-            }
+        user.postAction('api/Account/Logout', "", function() {
+            loader.css("display", "flex");
+        }, function() {
+            $("#forms").fadeIn();
+            $(".logout").fadeOut();
+            console.log("Wylogowano ");
+            $("#loggedSection").fadeOut();
+            sessionStorage.removeItem('loggedIn');
+            loader.hide();
+        }, function() {
+            console.log("nie dziala");
         });
     });
 }
 
 function getStudents() 
 {
-        $.ajax({
-            type: "GET",
-            url: "http://gradebook.somee.com/api/Students",
-            headers: {
-                'Authorization': 'Bearer ' + bearer
-            },
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            beforeSend: function () {
-                $(".bouncing-loader").css("display", "flex");
-            },
-            success: function (data) {
-            sdata = JSON.parse(JSON.stringify(data));
-            console.table(sdata);
-            $.each(sdata, function (index, student) { 
-                $('#students').append('<div class="row">');
-                $('#students').append('PESEL: ' + student.Pesel);
-                $('#students').append('Imię: ' + student.FirstName);
-                $('#students').append('Nazwisko: ' + student.SurName);
-                $('#students').append('</div>');
-                 console.log(student.FirstName);
-            });
-    
-            $(".bouncing-loader").hide();
-    
-            },
-            failure: function (response) {
-                alert(response.responseText);
-            },
-            error: function (response) {
-                alert(response.responseText);
-            }
+    user.getAction('api/Users', function() {
+        loader.css("display", "flex");
+    }, function(data) {
+        $.each(data, function (index, student) { 
+            $('#students').append('<div class="row">');
+            $('#students').append('PESEL: ' + student.Pesel);
+            $('#students').append('Imię: ' + student.FirstName);
+            $('#students').append('Nazwisko: ' + student.SurName);
+            $('#students').append('</div>');
+             console.log(student.FirstName);
         });
+    }, function(data) {
+        
+    });
 	
 }
 
-
 function loggedIn() {
     // TODO verification of token from API, not from cookies
-    if (Cookies.get('loggedIn')) {
+    if (sessionStorage.getItem('loggedIn')) {
         console.log("Jesteś zalogowany!");
         $("#forms").fadeOut();
         $(".logout").fadeIn();
@@ -211,6 +224,8 @@ function PrintElem()
 
 $(document).ready(function()
 {
+
+
 
     registerUser();
     loginUser();
@@ -250,83 +265,6 @@ $(document).ready(function()
 
 
 }) //! end ready
-
-	
-function GetAll(s_url) 
-{
-	$.ajax({
-		type: "GET",
-		url: s_url,
-		headers: {
-			'Authorization': 'Bearer ' + bearer
-		},
-		contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        beforeSend: function () {
-            $(".bouncing-loader").css("display", "flex");
-        },
-		success: function (data) {
-        sdata = JSON.parse(JSON.stringify(data));
-        console.log(sdata);
-		//alert(JSON.stringify(data))
-		//alert(sdata);
-		console.log("\nSuccess GetAll(), result:\n");
-
-		mySection.innerText += "\n";
-		for (var i = 0; i < data.length; i++) {
-			mySection.innerText += data[i] + "\n";
-			console.log(data[i] + "\n");
-        }
-        $(".bouncing-loader").hide();
-
-		},
-		failure: function (response) {
-			alert(response.responseText);
-		},
-		error: function (response) {
-			alert(response.responseText);
-		}
-	});
-}
-
-
-
-function GetById(s_url, id) 
-{
-	s_url += "/" + id;
-	
-	$.ajax({
-		type: "GET",
-		url: s_url,
-		headers: {
-			'Authorization': 'Bearer ' + bearer
-		},
-		contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        beforeSend: function () {
-            $(".bouncing-loader").css("display", "flex");
-        },
-		success: function (data) {
-		sdata = JSON.parse(JSON.stringify(data));
-		//alert(JSON.stringify(data))
-		//alert(sdata);
-		console.log("\nSuccess GetById(), result:\n");
-
-		mySection.innerText += "\n";
-		mySection.innerText += sdata + "\n";
-		console.log(sdata + "\n");
-        $(".bouncing-loader").hide();
-
-		},
-		failure: function (response) {
-			alert(response.responseText);
-		},
-		error: function (response) {
-			alert(response.responseText);
-		}
-    });
-	
-}
 
 
 
