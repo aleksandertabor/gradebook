@@ -1,20 +1,15 @@
-var sdata="";
-var bearer ="";
-
-
 // Variables
 const loader = $('.bouncing-loader');
-
-
-
-
 const server = 'http://gradebookx.azurewebsites.net/';
 
 
 class User {
 
-    constructor(bearer) {
-        this._bearer = bearer;
+    constructor() {
+        this._bearer = "";
+        this._email = "";
+        this._id = "";
+        this._entityId = "";
     }
 
     get bearer() {
@@ -25,13 +20,28 @@ class User {
         this._bearer = bearer;
     }
 
-    postAction(url, data, beforeSend, onSuccess, onError) {
+    set email(email) {
+        this._email = email;
+    }
+
+    set id(id) {
+        this._id = id;
+    }
+
+    set entityId(entityId) {
+        this._entityId = entityId;
+    }
+
+    postAction(url, data, beforeSend, onSuccess, onError, isToken) {
         console.log(data);
         $.ajax({
             type: "POST",
             url: server + url,
             data: data,
-            beforeSend: function () {
+            beforeSend: function (xhr) {
+                if (isToken) {
+                    xhr.setRequestHeader('Authorization', 'Bearer ' + user._bearer);
+                }
                 beforeSend();
             },
             success: function (data) {
@@ -57,7 +67,7 @@ class User {
             type: "GET",
             url: server + url,
             headers: {
-                'Authorization': 'Bearer ' + this._bearer
+                'Authorization': 'Bearer ' + user._bearer
             },
             contentType: "application/json; charset=utf-8",
             dataType: "json",
@@ -66,7 +76,6 @@ class User {
             },
             success: function (data) {
             data = JSON.parse(JSON.stringify(data));
-    
             onSuccess(data);
     
             },
@@ -78,53 +87,86 @@ class User {
             }
         });
     }
-    
-}
 
-
-var user = new User();
-
-
-
-if (sessionStorage.getItem('loggedIn') ) {
-    bearer = sessionStorage.getItem('loggedIn');
-}
-
-
-
-//! Functions
-
-// ** Register a new user
-function registerUser() {
+    // ** Register an new account
+    registerAccount() {
     $("#registerForm").submit(function (e) { 
         e.preventDefault();
-        var newUser = {
+        user.email = $(".email", this).val();
+        var newAccount = {
             Email: $(".email", this).val(),
             Password: $(".password", this).val(),
             ConfirmPassword: $(".password", this).val()
         };
-        console.log(newUser);
-        user.postAction('api/Account/Register', newUser, function() {
+        console.log(newAccount);
+        user.postAction('api/Account/Register', newAccount, function() {
             loader.css("display", "flex");
-        }, function() {
+        }, function(data) {
             $(this).find("input").val("");
             console.log("Registered ");
             $('.registerForm_Wrapper').slideToggle();
-            $('.loginForm_Wrapper .validation').html('<img src="success.svg" alt="Sukces!"><span class="validation-success"> Twoje konto zostało zarejestrowane. Możesz się zalogować.</span>');
-            $('.loginForm_Wrapper .validation').fadeIn();
-            $('input.email').focus();
+            if (!user.whetherExist()) {
+                $('.registerForm2_Wrapper').slideToggle();
+                $('.loginForm_Wrapper').slideToggle();
+                $('input.pesel').focus();
+            } else {
+                $('input.email').focus();
+            }
+            
             loader.hide();
         }, function(data) {
             console.log("nie dziala");
-            $('.registerForm_Wrapper .validation').html('<img src="error.svg" alt="Błąd!"><span class="validation-error">' + data.responseJSON.ModelState[""]["0"] + '</span>');
+            if (data.responseJSON.ModelState["model.Password"] != undefined) {
+                $('.registerForm_Wrapper .validation').html('<img src="error.svg" alt="Błąd!"><span class="validation-error">' + data.responseJSON.ModelState["model.Password"]["0"] + '</span>');
+            }
+            else {
+                $('.registerForm_Wrapper .validation').html('<img src="error.svg" alt="Błąd!"><span class="validation-error">' + data.responseJSON.ModelState[""]["0"] + '</span>');
+            }
             $('.registerForm_Wrapper .validation').fadeIn();
-        });
+            loader.hide();
+        }, false);
+        
+    });
+    }
+
+    // ** Register a new user
+registerUser() {
+    $("#registerForm2").submit(function (e) { 
+        e.preventDefault();
+
+            var newUser = {
+                EntityId: user._entityId,
+                Pesel: $(".pesel", this).val(),
+                FirstName: $(".firstname", this).val(),
+                SurName: $(".surname", this).val(),
+                Email: user._email,
+                RoleId: 1
+            };
+            console.log(newUser);
+            user.postAction('api/Users', newUser, function() {
+                $('.registerForm2_Wrapper .validation').html('<img src="success.svg" alt="Sukces!"><span class="validation-success"> Twoje konto zostało zarejestrowane. Musisz jeszcze dokończyć rejestrację.</span>');
+                $('.registerForm2_Wrapper .validation').fadeIn();
+                loader.css("display", "flex");
+            }, function(data) {
+                $(this).find("input").val("");
+                console.log("Drugi etap udany ");
+                $('.registerForm2_Wrapper').slideToggle();
+                $('.loginForm_Wrapper .validation').html('<img src="success.svg" alt="Sukces!"><span class="validation-success"> Twoje konto jest już gotowe. Możesz się zalogować.</span>');
+                $('.loginForm_Wrapper .validation').fadeIn();
+                $('.loginForm_Wrapper').slideToggle();
+                $('input.email').focus();
+                loader.hide();
+            }, function(data) {
+                console.log("nie dziala");
+                loader.hide();
+            }, true);
+       
         
     });
 }
 
 // ** Login user
-function loginUser() {
+loginUser() {
     $("#loginForm").submit(function (e) { 
         e.preventDefault();
         var logUser ={
@@ -136,67 +178,306 @@ function loginUser() {
         user.postAction('token', logUser, function() {
             loader.css("display", "flex");
         }, function(data) {
-            user._bearer = data.bearer;
+            user.bearer = data.access_token;
+            user.email = data.userName;
             sessionStorage.setItem('loggedIn', user._bearer);
             loggedIn();
-            getStudents();
             $("#loginForm input.email, #loginForm input.password").val("");
             $('.loginForm_Wrapper .validation').fadeIn();
             loader.hide();
-        }, function() {
+        }, function(data) {
+            $('.loginForm_Wrapper .validation').html('<img src="error.svg" alt="Błąd!"><span class="validation-error">' + data.responseJSON.error_description + '</span>');
+            $('.loginForm_Wrapper .validation').fadeIn();
+            loader.hide();
             console.log("nie dziala");
-        });
-        
+        }, false);
+
+
     });
 }
 
 // ** Logout
-function logout() {
+logout() {
     $(".logout").click(function (e) { 
         e.preventDefault();
-        user.postAction('api/Account/Logout', "", function() {
+        user.postAction('api/Account/Logout', function() {
             loader.css("display", "flex");
-        }, function() {
+        }, function(data) {
             $("#forms").fadeIn();
             $(".logout").fadeOut();
             console.log("Wylogowano ");
             $("#loggedSection").fadeOut();
             sessionStorage.removeItem('loggedIn');
             loader.hide();
-        }, function() {
+        }, function(data) {
             console.log("nie dziala");
-        });
+        }, true);
     });
 }
 
-function getStudents() 
-{
-    user.getAction('api/Users', function() {
+
+whetherExist() {
+
+    var logUser ={
+        grant_type:'password',
+        username: $("#registerForm .email").val(),
+        password: $("#registerForm .password").val()
+    };
+    console.log(logUser);
+    user.postAction('token', logUser, function() {
         loader.css("display", "flex");
     }, function(data) {
-        $.each(data, function (index, student) { 
-            $('#students').append('<div class="row">');
-            $('#students').append('PESEL: ' + student.Pesel);
-            $('#students').append('Imię: ' + student.FirstName);
-            $('#students').append('Nazwisko: ' + student.SurName);
-            $('#students').append('</div>');
-             console.log(student.FirstName);
+        user.bearer = data.access_token;
+        user.email = data.userName;
+        sessionStorage.setItem('loggedIn', user._bearer);
+        loader.hide();
+        user.getAction('api/Users/WhetherExist', function() {
+            loader.css("display", "flex");
+        }, function(data) {
+            loader.hide();
+            return data;
+        }, function(data) {
+            
         });
+        user.getAction('api/Users/EntityId', function() {
+            loader.css("display", "flex");
+        }, function(data) {
+            user.entityId = data;
+            console.log(data);
+            loader.hide();
+        }, function(data) {
+            
+        });
+    }, function(data) {
+        loader.hide();
+    });
+
+    
+}
+
+getUserInfo(callback) {
+    user.getAction('api/Users/UserInfo', function() {
+        loader.css("display", "flex");
+    }, function(data) {
+        user.id = data.UserId;
+        $('#students').append('<pre>' + JSON.stringify(data) + '</pre>' );
+        $(".email-data a").html(data.Email).attr("href", "mailto:" + data.Email)
+        $(".pesel-data").html(data.Pesel);
+        $(".rola-data").html(data.RoleName);
+        loader.hide();
+        callback();
+    }, function(data) {
+        loader.hide();
+    });
+}
+
+
+
+    
+}
+
+
+var user = new User();
+
+
+
+function getContent() 
+{
+    user.getAction('api/Grades', function() {
+        loader.css("display", "flex");
+    }, function(data) {
+        $('#students').append('<pre>' + JSON.stringify(data) + '</pre>' );
+        loader.hide();
     }, function(data) {
         
     });
+
+    user.getAction('api/Presences', function() {
+        loader.css("display", "flex");
+    }, function(data) {
+        $('#students').append('<pre>' + JSON.stringify(data) + '</pre>' );
+        loader.hide();
+    }, function(data) {
+        
+    });
+
+    user.getAction('api/Roles', function() {
+        loader.css("display", "flex");
+    }, function(data) {
+        $('#students').append('<pre>' + JSON.stringify(data) + '</pre>' );
+        loader.hide();
+    }, function(data) {
+        
+    });
+
+
+    user.getAction('api/EducatorClasses', function() {
+        loader.css("display", "flex");
+    }, function(data) {
+        $('#students').append('<pre>' + JSON.stringify(data) + '</pre>' );
+        loader.hide();
+    }, function(data) {
+        
+    });
+
+
+    user.getAction('api/TeachersClasses', function() {
+        loader.css("display", "flex");
+    }, function(data) {
+        $('#students').append('<pre>' + JSON.stringify(data) + '</pre>' );
+        loader.hide();
+    }, function(data) {
+        
+    });
+
+
+    user.getAction('api/UsersClasses', function() {
+        loader.css("display", "flex");
+    }, function(data) {
+        $('#students').append('<pre>' + JSON.stringify(data) + '</pre>' );
+        loader.hide();
+    }, function(data) {
+        
+    });
+
+    user.getAction('api/Users/WhetherExist', function() {
+        loader.css("display", "flex");
+    }, function(data) {
+        $('#students').append("<h1>NOWE FUNKCJE</h1>");
+        $('#students').append('<pre>' + JSON.stringify(data) + '</pre>' );
+        loader.hide();
+    }, function(data) {
+        
+    });
+
+    user.getAction('api/Subjects', function() {
+        loader.css("display", "flex");
+    }, function(data) {
+        $('#students').append('<pre>' + JSON.stringify(data) + '</pre>' );
+        loader.hide();
+    }, function(data) {
+        
+    });
+
+    user.getAction('api/Classes', function() {
+        loader.css("display", "flex");
+    }, function(data) {
+        $('#students').append('<pre>' + JSON.stringify(data) + '</pre>' );
+        loader.hide();
+    }, function(data) {
+        
+    });
+
+    user.getAction('api/Classes/ClassesByUserId/' + user._id, function() {
+        console.log(user._id);
+        loader.css("display", "flex");
+    }, function(data) {
+        let content = "";
+        content += "<option value='Wybierz klasę'>Wybierz klasę</option>";
+        $.each(data, function (index, classData) { 
+            content += "<option value='" + classData.ClassId + "'>" + classData.Name + " - " +  classData.Year + "</option>";
+        });
+        $('.grades .select-class select').html(content);
+        loader.hide();
+    }, function(data) {
+        loader.hide();
+    });
+
 	
 }
 
+function getGrades() {
+    $('.select-class select').on('change', function() {
+        user.getAction('api/Grades/ThisGrades/' + user._id + '/' + this.value, function() {
+            loader.css("display", "flex");
+        }, function(data) {
+            let content = "";
+            content += "<h2>Przedmiot</h2>";
+            content += "<h2>Oceny</h2>";
+            $.each(data, function (index, grade) { 
+                 content += "<div class='grade' id='" + grade.GradeId + "'>";
+                 content += "<span>" + grade.SubjectName + "</span>";
+                 content += "<span>" + grade.ThisGrade + "</span>";
+                 content += "<div class='grade-info'>" + grade.TeacherName + " " + grade.Date + " "  + grade.LessonNumber + "</div>";
+                 content += "</div>";
+            });
+            $('.actual-grades').html(content);
+            loader.hide();
+        }, function(data) {
+            loader.hide();
+        });
+      })
+}
+
+
 function loggedIn() {
-    // TODO verification of token from API, not from cookies
-    if (sessionStorage.getItem('loggedIn')) {
+        user.getUserInfo(function() {
+            getContent();
+        });
         console.log("Jesteś zalogowany!");
         $("#forms").fadeOut();
         $(".logout").fadeIn();
         $("#loggedSection").fadeIn();
-    }
 }
+
+
+//! Ready start -- INIT
+
+$(document).ready(function()
+{
+
+
+    user.registerAccount();
+    user.registerUser();
+    user.loginUser();
+    user.logout();
+
+    getGrades();
+
+    if (sessionStorage.getItem('loggedIn') ) {
+        user.bearer = sessionStorage.getItem('loggedIn');
+        loggedIn();
+    }
+
+    tabs();
+
+    //TODO need function for this
+
+    $("#printStudents").click(function (e) { 
+        e.preventDefault();
+        PrintElem();
+    });
+ 
+
+
+}) //! end ready
+
+
+// Content
+	
+function tabs() {
+    $('.tab-list').each(function(){
+        var $this = $(this);
+        var $tab = $this.find('li.active');
+        var $link = $tab.find('a'); 
+        var $panel = $($link.attr('href'));
+      
+        $this.on('click', '.tab-control', function(e) { 
+          e.preventDefault();
+          var $link = $(this), 
+              id = this.hash; 
+      
+          if (id && !$link.is('.active')) { 
+            $panel.removeClass('active'); 
+            $tab.removeClass('active'); 
+      
+            $panel = $(id).addClass('active');
+            $tab = $link.parent().addClass('active'); 
+          }
+        });
+      });
+}
+
 
 /*** Printing grades */
 
@@ -218,54 +499,3 @@ function PrintElem()
 
     return true;
 }
-
-
-//! Ready start -- INIT
-
-$(document).ready(function()
-{
-
-
-
-    registerUser();
-    loginUser();
-    loggedIn();
-    logout();
-
-    //TODO need function for this
-
-    $("#printStudents").click(function (e) { 
-        e.preventDefault();
-        PrintElem();
-    });
-
-
-    //TODO need function for this
-
-    $('.tab-list').each(function(){
-        var $this = $(this);
-        var $tab = $this.find('li.active');
-        var $link = $tab.find('a'); 
-        var $panel = $($link.attr('href'));
-      
-        $this.on('click', '.tab-control', function(e) { 
-          e.preventDefault();
-          var $link = $(this), 
-              id = this.hash; 
-      
-          if (id && !$link.is('.active')) { 
-            $panel.removeClass('active'); 
-            $tab.removeClass('active'); 
-      
-            $panel = $(id).addClass('active');
-            $tab = $link.parent().addClass('active'); 
-          }
-        });
-      });
-
-
-}) //! end ready
-
-
-
-	

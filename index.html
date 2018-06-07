@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>GradeBook</title>
+    <title>🎓GradeBook</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto:300i,400,900,900i" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
@@ -15,7 +15,7 @@
             <div class="container">
                 <nav>
                         <ul>
-                            <li class="logo"><a href="http://"><img src="logo.svg" alt="Logo - GradeBook"><span>GradeBook</span></a></li>
+                            <li class="logo"><a href="http://aleksandertabor.pl/gradebook"><img src="logo.svg" alt="Logo - GradeBook"><span>GradeBook</span></a></li>
                             <li><a href="http://"></a></li>
                             <li><a href="http://"></a></li>
                             <li><a href="http://"></a></li>
@@ -50,6 +50,20 @@
                     </form>
                     <p class="validation"></p>
                 </div>
+
+                <div class="form registerForm2_Wrapper">
+                        <h2>Rejestracja - etap #2</h2>
+                    <form action="#" method="post" id="registerForm2">
+                        <label for="pesel">Pesel:</label>
+                        <input type="text" name="pesel" class="pesel" maxlength="11" placeholder="12345678901">
+                        <label for="firstname">Imię:</label>
+                        <input type="text" name="firstname" class="firstname">
+                        <label for="surname">Nazwisko:</label>
+                        <input type="text" name="surname" class="surname">
+                        <input type="submit" value="Dokończ rejestrację">
+                    </form>
+                    <p class="validation"></p>
+                </div>
             </section>
             <section id="loggedSection">
                 <h2>Jesteś zalogowany!</h2>
@@ -61,7 +75,7 @@
                           <li class=""><a class="tab-control" href="#tab-3"><h3>Twoje dane</h3></a></li>
                         </ul>
                 
-                        <div class="tab-panel active" id="tab-1">
+                        <div class="tab-panel active students" id="tab-1">
                             <div id="students">
 
                             </div>
@@ -70,11 +84,23 @@
                         </div>
                 
                         <div class="tab-panel grades" id="tab-2">
-                            <p></p>
+                            <p class="select-class">
+                                <select name="" id="">
+                                    
+                                </select>
+                            </p>
+                            <div class="actual-grades">
+
+                            </div>
                         </div>
                 
                         <div class="tab-panel your-data" id="tab-3">
-                            <p></p>
+                            <h3>Adres e-mail: </h3>
+                            <p class="email-data"><a href="mailto:"></a></p>
+                            <h3>PESEL: </h3>
+                            <p class="pesel-data"></p>
+                            <h3>Typ konta: </h3>
+                            <p class="rola-data"></p>
                         </div>
                 
                       </div>
