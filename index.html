@@ -73,6 +73,7 @@
                           <li class="active"><a class="tab-control students" href="#tab-1"><h3>Uczniowie</h3></a></li>
                           <li class=""><a class="tab-control" href="#tab-2"><h3>Oceny</h3></a></li>
                           <li class=""><a class="tab-control" href="#tab-3"><h3>Twoje dane</h3></a></li>
+                          <li class=""><a class="tab-control" href="#tab-4"><h3>Panel administratora</h3></a></li>
                         </ul>
                 
                         <div class="tab-panel active students" id="tab-1">
@@ -89,6 +90,11 @@
                                     
                                 </select>
                             </p>
+                            <p class="select-class-teacher">
+                                <select name="" id="">
+                                    
+                                </select>
+                            </p>
                             <div class="actual-grades">
 
                             </div>
@@ -101,6 +107,23 @@
                             <p class="pesel-data"></p>
                             <h3>Typ konta: </h3>
                             <p class="rola-data"></p>
+                        </div>
+
+                        <div class="tab-panel admin" id="tab-4">
+                            <h3>Zmiana uprawnień użytkowników: </h3>
+                            <p class="select-user-adm">
+                                <select name="users" id="users">
+                                    
+                                </select>
+                                <select name="roles" id="roles">
+                                    <option selected="true" disabled="disabled">Zmień uprawnienia</option>
+                                    <option value="Student">Student</option>
+                                    <option value="Teacher">Teacher</option>
+                                    <option value="Parent">Parent</option>
+                                    <option value="Admin">Admin</option>
+                                </select>
+                                <button type="submit">Zapisz</button>
+                            </p>
                         </div>
                 
                       </div>

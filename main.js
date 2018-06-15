@@ -10,6 +10,8 @@ class User {
         this._email = "";
         this._id = "";
         this._entityId = "";
+        this._exist = 0;
+        this._role = "";
     }
 
     get bearer() {
@@ -30,6 +32,14 @@ class User {
 
     set entityId(entityId) {
         this._entityId = entityId;
+    }
+
+    set exist(exist) {
+        this._exist = exist;
+    }
+
+    set role(role) {
+        this._role = role;
     }
 
     postAction(url, data, beforeSend, onSuccess, onError, isToken) {
@@ -105,13 +115,14 @@ class User {
             $(this).find("input").val("");
             console.log("Registered ");
             $('.registerForm_Wrapper').slideToggle();
-            if (!user.whetherExist()) {
-                $('.registerForm2_Wrapper').slideToggle();
-                $('.loginForm_Wrapper').slideToggle();
-                $('input.pesel').focus();
-            } else {
+            //user.whetherExist();
+            // if (user._exist == 0) {
+            //     $('.registerForm2_Wrapper').slideToggle();
+            //     $('.loginForm_Wrapper').slideToggle();
+            //     $('input.pesel').focus();
+            // } else {
                 $('input.email').focus();
-            }
+           // }
             
             loader.hide();
         }, function(data) {
@@ -139,8 +150,7 @@ registerUser() {
                 Pesel: $(".pesel", this).val(),
                 FirstName: $(".firstname", this).val(),
                 SurName: $(".surname", this).val(),
-                Email: user._email,
-                RoleId: 1
+                Email: user._email
             };
             console.log(newUser);
             user.postAction('api/Users', newUser, function() {
@@ -181,9 +191,20 @@ loginUser() {
             user.bearer = data.access_token;
             user.email = data.userName;
             sessionStorage.setItem('loggedIn', user._bearer);
-            loggedIn();
-            $("#loginForm input.email, #loginForm input.password").val("");
-            $('.loginForm_Wrapper .validation').fadeIn();
+            //user.whetherExist();
+            // if (user._exist == 0) {
+            //     console.log("zle");
+            //     $('.registerForm2_Wrapper').slideToggle();
+            //     $('.loginForm_Wrapper').slideToggle();
+            //     $('.registerForm_Wrapper').slideToggle();
+            //     $('input.pesel').focus();
+            // } else {
+                console.log("dobrze");
+                $('input.email').focus();
+                loggedIn();
+                $("#loginForm input.email, #loginForm input.password").val("");
+                $('.loginForm_Wrapper .validation').fadeIn();
+            //}
             loader.hide();
         }, function(data) {
             $('.loginForm_Wrapper .validation').html('<img src="error.svg" alt="Błąd!"><span class="validation-error">' + data.responseJSON.error_description + '</span>');
@@ -218,27 +239,12 @@ logout() {
 
 whetherExist() {
 
-    var logUser ={
-        grant_type:'password',
-        username: $("#registerForm .email").val(),
-        password: $("#registerForm .password").val()
-    };
-    console.log(logUser);
-    user.postAction('token', logUser, function() {
+
+    user.getAction('api/Users/WhetherExist', function() {
         loader.css("display", "flex");
     }, function(data) {
-        user.bearer = data.access_token;
-        user.email = data.userName;
-        sessionStorage.setItem('loggedIn', user._bearer);
+        user.exist = data;
         loader.hide();
-        user.getAction('api/Users/WhetherExist', function() {
-            loader.css("display", "flex");
-        }, function(data) {
-            loader.hide();
-            return data;
-        }, function(data) {
-            
-        });
         user.getAction('api/Users/EntityId', function() {
             loader.css("display", "flex");
         }, function(data) {
@@ -249,10 +255,9 @@ whetherExist() {
             
         });
     }, function(data) {
-        loader.hide();
-    });
+        console.log("blad whether");
+    });    
 
-    
 }
 
 getUserInfo(callback) {
@@ -260,12 +265,13 @@ getUserInfo(callback) {
         loader.css("display", "flex");
     }, function(data) {
         user.id = data.UserId;
+        user.email = data.Email;
         $('#students').append('<pre>' + JSON.stringify(data) + '</pre>' );
         $(".email-data a").html(data.Email).attr("href", "mailto:" + data.Email)
         $(".pesel-data").html(data.Pesel);
         $(".rola-data").html(data.RoleName);
         loader.hide();
-        callback();
+        typeof callback == 'function' && callback();
     }, function(data) {
         loader.hide();
     });
@@ -276,9 +282,7 @@ getUserInfo(callback) {
     
 }
 
-
 var user = new User();
-
 
 
 function getContent() 
@@ -293,15 +297,6 @@ function getContent()
     });
 
     user.getAction('api/Presences', function() {
-        loader.css("display", "flex");
-    }, function(data) {
-        $('#students').append('<pre>' + JSON.stringify(data) + '</pre>' );
-        loader.hide();
-    }, function(data) {
-        
-    });
-
-    user.getAction('api/Roles', function() {
         loader.css("display", "flex");
     }, function(data) {
         $('#students').append('<pre>' + JSON.stringify(data) + '</pre>' );
@@ -343,7 +338,7 @@ function getContent()
     user.getAction('api/Users/WhetherExist', function() {
         loader.css("display", "flex");
     }, function(data) {
-        $('#students').append("<h1>NOWE FUNKCJE</h1>");
+        $('#students').append("<h1>CZY ISTNIEJE</h1>");
         $('#students').append('<pre>' + JSON.stringify(data) + '</pre>' );
         loader.hide();
     }, function(data) {
@@ -353,20 +348,15 @@ function getContent()
     user.getAction('api/Subjects', function() {
         loader.css("display", "flex");
     }, function(data) {
+        $('#students').append("<h1>API SUBJECTS</h1>");
         $('#students').append('<pre>' + JSON.stringify(data) + '</pre>' );
         loader.hide();
     }, function(data) {
         
     });
 
-    user.getAction('api/Classes', function() {
-        loader.css("display", "flex");
-    }, function(data) {
-        $('#students').append('<pre>' + JSON.stringify(data) + '</pre>' );
-        loader.hide();
-    }, function(data) {
-        
-    });
+
+
 
     user.getAction('api/Classes/ClassesByUserId/' + user._id, function() {
         console.log(user._id);
@@ -383,8 +373,28 @@ function getContent()
         loader.hide();
     });
 
+    getClasses();
+
+    getUsers();
 	
 }
+
+function getClasses() {
+    user.getAction('api/TeachersClasses/TeachersClassReturnClass/' + user._id, function() {
+        loader.css("display", "flex");
+    }, function(data) {
+        let content = "";
+        content += "<option selected='true' disabled='disabled' value='Wybierz klasę'>Wybierz klasę</option>";
+        $.each(data, function (index, classData) { 
+            content += "<option value='" + classData.Id + "'>" + classData.Name + " - " +  classData.Year + "</option>";
+        });
+        $('.grades .select-class-teacher select').html(content);
+        loader.hide();
+    }, function(data) {
+        
+    });
+}
+
 
 function getGrades() {
     $('.select-class select').on('change', function() {
@@ -393,13 +403,27 @@ function getGrades() {
         }, function(data) {
             let content = "";
             content += "<h2>Przedmiot</h2>";
-            content += "<h2>Oceny</h2>";
+            content += "<h2>Oceny cząstkowe</h2>";
+            content += "<h2>Średnia ocen</h2>";
+            let subject = "";
             $.each(data, function (index, grade) { 
-                 content += "<div class='grade' id='" + grade.GradeId + "'>";
-                 content += "<span>" + grade.SubjectName + "</span>";
-                 content += "<span>" + grade.ThisGrade + "</span>";
-                 content += "<div class='grade-info'>" + grade.TeacherName + " " + grade.Date + " "  + grade.LessonNumber + "</div>";
-                 content += "</div>";
+                if (subject != grade.SubjectName) {
+                    subject = grade.SubjectName;
+                    content += "<div class='subject'>";
+                    content += "<span>" + grade.SubjectName + "</span>";
+                    $.each(data, function (index, grade) { 
+                        if (subject == grade.SubjectName) {
+                            content += "<div class='grade' id='" + grade.GradeId + "'>";
+                            content += "<span grade='" + grade.ThisGrade + "'>" + grade.ThisGrade + "</span>";
+                            content += "<div class='grade-info'>" + grade.TeacherName + " " + grade.Date + " "  + grade.LessonNumber + "</div>";
+                            content += "</div>";
+                        }
+                    });
+                    content += "<span class='average' subjectId='" +  grade.SubjectId + "'></span>";
+                    getAverage($('.select-class select').val(), grade.SubjectId, 1);
+                    content += "</div>";
+                }
+                 
             });
             $('.actual-grades').html(content);
             loader.hide();
@@ -409,15 +433,66 @@ function getGrades() {
       })
 }
 
+function getAverage(classId, subjectId, numberOfSemester) {
+    user.getAction('api/UsersClasses/Average/' + classId + '/' + subjectId + '/' + numberOfSemester, function() {
+        loader.css("display", "flex");
+    }, function(data) {
+        $(".average").last().html(data);
+        loader.hide();
+    }, function(data) {
+        loader.hide();
+    });
+}
+
+
+function getUsers() {
+        user.getAction('api/Users', function() {
+            loader.css("display", "flex");
+        }, function(data) {
+            let content = "";
+        content += "<option selected='true' disabled='disabled' value='Wybierz użytkownika'>Wybierz użytkownika</option>";
+        $.each(data, function (index, userData) { 
+            content += "<option value='" + userData.Id + "'>" + userData.FirstName + " " +  userData.SurName + " - " + userData.Email + "</option>";
+        });
+        $('#users').html(content);
+            loader.hide();
+        }, function(data) {
+            loader.hide();
+        });
+}
+
 
 function loggedIn() {
-        user.getUserInfo(function() {
+    // console.log("to jest to: " + user._exist);
+    // if (user._exist == 0) {
+    //     console.log("Jesteś niezalogowany!");
+    //     user.getUserInfo( () => {
+    //         user.getAction('api/Users/EntityId', function() {
+    //             loader.css("display", "flex");
+    //         }, function(data) {
+    //             user.entityId = data;
+    //             console.log(data);
+    //             loader.hide();
+    //         }, function(data) {
+                
+    //         });
+    //     });
+    //     $('.registerForm2_Wrapper').slideToggle();
+    //     $('.loginForm_Wrapper').slideToggle();
+    //     $('.registerForm_Wrapper').slideToggle();
+    //     $('input.pesel').focus();
+    // } else { 
+            console.log("Jesteś zalogowany!");
+        user.getUserInfo( () => {
             getContent();
-        });
-        console.log("Jesteś zalogowany!");
+        });        
         $("#forms").fadeOut();
         $(".logout").fadeIn();
         $("#loggedSection").fadeIn();
+        
+   //}
+
+        
 }
 
 
@@ -436,6 +511,7 @@ $(document).ready(function()
 
     if (sessionStorage.getItem('loggedIn') ) {
         user.bearer = sessionStorage.getItem('loggedIn');
+        //user.whetherExist();        
         loggedIn();
     }
 
@@ -449,6 +525,9 @@ $(document).ready(function()
     });
  
 
+    //!TODO VIEWS FOR EVERY ROLE!
+
+    //TODO AFTER 1 HOUR USE RELOGIN INFO
 
 }) //! end ready
 

@@ -165,7 +165,7 @@ form input[type="submit"] {
     display: none;
     background-color: #e5e5e5;
     color: #666;
-    min-height: 150px;
+    min-height: 300px;
     overflow: auto;
 }
   
@@ -186,6 +186,8 @@ form input[type="submit"] {
     height: 50px;
 }
 
+/* Grades */
+
 
 .grade-info {
     display: none;
@@ -196,6 +198,45 @@ form input[type="submit"] {
     background-color: grey;
     padding: 5px;
     border: 2px solid black;
+    position: absolute;
+    z-index: 99999;
+}
+
+.grade {
+    display: inline-block;
+    margin: 5px;
+    position: relative;
+    cursor: pointer;
+}
+
+.grade span {
+    padding: 5px;
+    color: #fff;
+    font-weight: 900;
+}
+
+span[grade="5"] {
+    background-color: green;
+}
+
+span[grade="4"] {
+    background-color: greenyellow;
+}
+
+span[grade="3"] {
+    background-color: orange;
+}
+
+span[grade="2"] {
+    background-color: pink;
+}
+
+span[grade="1"] {
+    background-color: red;
+}
+
+.average {
+    font-style: italic;
 }
 
 /* Footer */
