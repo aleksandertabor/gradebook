@@ -4,16 +4,31 @@
     padding: 0;
 }
 
+
+html {
+    height: 100%;
+}
+
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Saira', sans-serif;
+    position: relative;
+    display: none;
+    background: #1a1a1a;
+}
+
+.site {
+    margin: 21px;
+    padding: 21px;
+    background: #fff;
 }
 
 /* Variables */
 
 :root {
-    --header-bg-color: #66B9BF;
+    --header-bg-color: #5ccbf9;
     --footer-bg-color: #99D1D5;
-    --form-bg-color: #E98E4E;
+    --form-bg-color: #ff700b;
+    --form-input-color: #0088e8;
 }
 
 /* Content */
@@ -25,8 +40,17 @@ body {
     flex-direction: column;
 }
 
+.container.main {
+    background-image: url(school.png);
+    background-size: 40% 40%;
+    background-repeat: no-repeat;
+    background-position: bottom;
+    min-height: 84vh;
+}
+
 header {
     background-color: var(--header-bg-color);
+    border: 2px solid #000;
 }
 
 nav ul {
@@ -50,6 +74,7 @@ nav ul li a {
     display: flex;
     align-items: center;
     padding: 5px;
+    color: #000;
 }
 
 nav ul li:not(:last-child) {
@@ -67,29 +92,41 @@ nav ul li.logout {
     flex: 2;
 }
 
-.logo img, .logout img {
+.logo img, .logout img, .admin img {
     width: 50px;
     height: 50px;
 }
 
-.logout {
+.logout, .admin {
     display: none;
 }
+
 
 #forms {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
 }
 
 #forms .form {
     background-color: var(--form-bg-color);
     flex: 1;
-    height: 300px;
+    height: 350px;
     padding: 10px;
-    margin: 15px;
-    border-radius: 15px;
+    margin: 21px 11px 21px 11px;
+    border: 2px solid #000;
 }
 
+progress {
+    background: green;
+}
+
+#forms h2 {
+    margin-bottom: 21px;
+    text-transform: uppercase;
+    text-align: center;
+    font-size: 36px;
+}
 
 .form form {
     display: flex;
@@ -97,22 +134,34 @@ nav ul li.logout {
 }
 
 form input{
-    border: 2px solid #66B9BF;
+    border: 2px solid #000;
     padding: .8em;
     background-color: #fff;
     margin-top: 5px;
 }
 
-form input[type="submit"] {
-    width: 25%;
+form input:hover {
+    box-shadow: 0 0 0 2px white, 0 0 0 4px #000;
 }
+
+form input[type="submit"] {
+    width: 100%;
+}
+
+.modal-content form input[type="submit"]{
+    width: 80%;
+}
+
+
 
 .registerForm2_Wrapper {
     display: none;
+    min-height: 100%; 
+    height: 470px!important;
 }
 
 .validation {
-    margin-top: 15px;
+    margin-top: 8px;
 }
 
 .validation-error {
@@ -132,13 +181,23 @@ form input[type="submit"] {
 
 #loggedSection {
     display: none;
+    margin-top: 21px;
 }
 
+.tabs {
+    display: grid;
+    grid-template-columns: 1fr 6fr;
+}
+
+.tab-list {
+    display: flex;
+    flex-direction: column;
+}
   
 .tab-list li {
     display: inline-block;
     list-style-type: none;
-    background-color: #303030;
+    background-color: #93111a;
     border-bottom: 3px solid #858585;
     text-transform: uppercase;
     letter-spacing: 0.2em;
@@ -148,6 +207,7 @@ form input[type="submit"] {
     color: #f2f2f2;
     display: block;
     padding: 3px 10px 3px 10px;
+    text-decoration: none;
 }
   
 .tab-list li.active, .tab-list li.hover {
@@ -157,7 +217,8 @@ form input[type="submit"] {
   
   .tab-list li.active a, .tab-list li a:hover {
     color: #666;
-    background-color: #e5e5e5;
+    background-color: var(--form-bg-color);
+    text-decoration: none;
 }
 
 
@@ -166,7 +227,8 @@ form input[type="submit"] {
     background-color: #e5e5e5;
     color: #666;
     min-height: 300px;
-    overflow: auto;
+    overflow: visible;
+    padding: 10px;
 }
   
 .tab-panel.active {
@@ -188,6 +250,13 @@ form input[type="submit"] {
 
 /* Grades */
 
+.actual-grades h2 {
+    display: inline-block;
+}
+
+.subject {
+    margin: 5px;
+}
 
 .grade-info {
     display: none;
@@ -195,7 +264,7 @@ form input[type="submit"] {
 
 .grade:hover .grade-info {
     display: inline-block;
-    background-color: grey;
+    background-color: #fff;
     padding: 5px;
     border: 2px solid black;
     position: absolute;
@@ -213,6 +282,11 @@ form input[type="submit"] {
     padding: 5px;
     color: #fff;
     font-weight: 900;
+}
+
+.grade span a {
+    text-decoration: none;
+    color: #000;
 }
 
 span[grade="5"] {
@@ -239,6 +313,21 @@ span[grade="1"] {
     font-style: italic;
 }
 
+
+#addGrades label input {
+    margin: 5px;
+}
+
+#addGrades p {
+    margin: 0px;
+}
+
+.thisGrades {
+    border: 2px solid black;
+    padding: 21px;
+    margin-bottom: 21px;
+}
+
 /* Footer */
 
 footer {
@@ -249,6 +338,106 @@ footer {
     background-color: var(--footer-bg-color);
 }
 
+
+/* Select */
+
+select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -ms-appearance: none;
+    appearance: none;
+    outline: 0;
+    box-shadow: none;
+    border: 0 !important;
+    background: var(--form-input-color);
+    background-image: none;
+  }
+
+.select {
+    position: relative;
+    display: block;
+    width: 20em;
+    height: 100%;
+    line-height: 3;
+    background: var(--form-input-color);
+    overflow: hidden;
+    border-radius: .25em;
+    padding: 21px;
+    margin: 21px 0px;
+  }
+  select {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0 0 0 .5em;
+    color: #fff;
+    cursor: pointer;
+    font-size: 1.1rem;
+  }
+  select::-ms-expand {
+    display: none;
+  }
+
+  .select::after {
+    content: '\25BC';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    padding: 0 1em;
+    background: var(--header-bg-color);
+    pointer-events: none;
+  }
+
+  .select:hover::after {
+    color: #f39c12;
+  }
+
+  .select::after {
+    -webkit-transition: .25s all ease;
+    -o-transition: .25s all ease;
+    transition: .25s all ease;
+  }
+
+
+/* Modal */ 
+.modal {
+    display: none;
+    position: fixed; 
+    z-index: 1; /* Sit on top */
+    padding-top: 50px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+/* The Close Button */
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
 
 /* Ajax Requests */
 

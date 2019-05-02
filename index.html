@@ -4,13 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>🎓GradeBook</title>
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300i,400,900,900i" rel="stylesheet">
+    <link rel="shortcut icon" type="image/png" href="school.png"/>
+    <title>🎓 𝙋𝙧𝙤𝘿𝙯𝙞𝙚𝙣𝙣𝙞𝙠</title>
+    <link href="https://fonts.googleapis.com/css?family=Saira:300i,400,900,900i" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.0/js.cookie.min.js'></script>
 </head>
 <body>
+    <div class="site">
         <header>
             <div class="container">
                 <nav>
@@ -20,12 +22,13 @@
                             <li><a href="http://"></a></li>
                             <li><a href="http://"></a></li>
                             <li><a href="http://"></a></li>
+                            <li class="admin"><a href="http://"><img src="admin.svg" alt="Panel administratora - GradeBook"><span>Panel administratora</span></a></li>
                             <li class="logout"><a href="http://"><img src="logout.svg" alt="Wyloguj - GradeBook"><span>Wyloguj się</span></a></li>
                         </ul>
                     </nav>
             </div>
         </header>
-    <div class="container">
+    <div class="container main">
             <section id="forms">
                 <div class="form registerForm_Wrapper">
                         <h2>Rejestracja</h2>
@@ -50,9 +53,10 @@
                     </form>
                     <p class="validation"></p>
                 </div>
-
+                
                 <div class="form registerForm2_Wrapper">
-                        <h2>Rejestracja - etap #2</h2>
+                        <h2>Rejestracja - etap #2   <progress value="50" max="100">
+                            </progress></h2> 
                     <form action="#" method="post" id="registerForm2">
                         <label for="pesel">Pesel:</label>
                         <input type="text" name="pesel" class="pesel" maxlength="11" placeholder="12345678901">
@@ -66,41 +70,47 @@
                 </div>
             </section>
             <section id="loggedSection">
-                <h2>Jesteś zalogowany!</h2>
                     <div class="tabs">
 
                         <ul class="tab-list">
-                          <li class="active"><a class="tab-control students" href="#tab-1"><h3>Uczniowie</h3></a></li>
-                          <li class=""><a class="tab-control" href="#tab-2"><h3>Oceny</h3></a></li>
-                          <li class=""><a class="tab-control" href="#tab-3"><h3>Twoje dane</h3></a></li>
-                          <li class=""><a class="tab-control" href="#tab-4"><h3>Panel administratora</h3></a></li>
+                          <li class="active"><a class="tab-control" href="#tab-1"><h3>Oceny</h3></a></li>
+                          <li class=""><a class="tab-control" href="#tab-2"><h3>Twoje dane</h3></a></li>
                         </ul>
                 
-                        <div class="tab-panel active students" id="tab-1">
-                            <div id="students">
-
+                        <div class="tab-panel grades active" id="tab-1">
+                            <div class="student">
+                                    <p class="select-class select">
+                                            <select name="" id="">
+                                                
+                                            </select>
+                                    </p>
                             </div>
-                            <a href="#" id="printStudents"><img src="printer.svg" alt="Wydrukuj listę studentów"></a>
-                           <p></p>
-                        </div>
-                
-                        <div class="tab-panel grades" id="tab-2">
-                            <p class="select-class">
-                                <select name="" id="">
-                                    
-                                </select>
-                            </p>
-                            <p class="select-class-teacher">
-                                <select name="" id="">
-                                    
-                                </select>
-                            </p>
+                            <div class="teacher">
+                                <p class="select-class-teacher select">
+                                        <select name="" id="">
+                                            
+                                        </select>
+                                    </p>
+                                    <p class="select-teacher-subjects select">
+                                            <select name="" id="">
+                                            
+                                            </select>
+                                    </p>
+                                    <p class="select-class-user">
+        
+                                    </p>
+                            </div>
                             <div class="actual-grades">
 
                             </div>
+      
                         </div>
                 
-                        <div class="tab-panel your-data" id="tab-3">
+                        <div class="tab-panel your-data" id="tab-2">
+                            <h3>Imię: </h3>
+                            <p class="name-data"></p>
+                            <h3>Nazwisko: </h3>
+                            <p class="surname-data"></p>
                             <h3>Adres e-mail: </h3>
                             <p class="email-data"><a href="mailto:"></a></p>
                             <h3>PESEL: </h3>
@@ -108,29 +118,12 @@
                             <h3>Typ konta: </h3>
                             <p class="rola-data"></p>
                         </div>
-
-                        <div class="tab-panel admin" id="tab-4">
-                            <h3>Zmiana uprawnień użytkowników: </h3>
-                            <p class="select-user-adm">
-                                <select name="users" id="users">
-                                    
-                                </select>
-                                <select name="roles" id="roles">
-                                    <option selected="true" disabled="disabled">Zmień uprawnienia</option>
-                                    <option value="Student">Student</option>
-                                    <option value="Teacher">Teacher</option>
-                                    <option value="Parent">Parent</option>
-                                    <option value="Admin">Admin</option>
-                                </select>
-                                <button type="submit">Zapisz</button>
-                            </p>
-                        </div>
                 
                       </div>
             </section>     
     </div>
 
-    <footer>
+    <!-- <footer>
             <div class="container">
                     <nav>
                             <ul>
@@ -143,13 +136,77 @@
                     </nav>
                     <p>&copy; 2018</p>
                 </div>
-    </footer>
+    </footer> -->
     <div class="bouncing-loader">
         <div></div>
         <div></div>
         <div></div>
     </div>
+    <div id="myModal" class="modal">
+
+        <div class="modal-content">
+        <span class="close">&times;</span>
+        <p>Czy chcesz usunąć ocenę?</p>
+        <button type="button" id="accept">Tak</button>
+        <button type="button" id="cancel">Nie</button>
+        <input type="hidden" name="grade" id="gradeId" value="">
+        </div>
+
+    </div>
     
+    <div id="admin-panel" class='modal'>
+            <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h3>Zmiana uprawnień użytkowników: </h3>
+            <p class="select-user-adm">
+                <form action="" id="roleForm" class="select">
+                            <select name="users" id="users">
+                    
+                            </select>
+                            <select name="roles" id="roles">
+                                <option selected="true" disabled="disabled">Zmień uprawnienia</option>
+                                <option value="Student">Student</option>
+                                <option value="Teacher">Teacher</option>
+                                <option value="Parent">Parent</option>
+                                <option value="Admin">Admin</option>
+                            </select>
+                            <input type="submit" value="Zapisz">
+                </form>
+            </p>
+
+            <h3>Przypisanie nauczyciela do klasy: </h3>
+            <p class="select-user-adm">
+                <form action="" id="teacherForm" class="select">
+                            <select name="teachers" id="teachers">
+                    
+                            </select>
+                            <select name="subjects" id="subjects">
+                                
+                                </select>
+                            <select name="classes" id="classes1">
+                                
+                            </select>
+                            <input type="submit" value="Zapisz">
+                </form>
+            </p>
+
+            <h3>Przypisanie ucznia do klasy: </h3>
+            <p class="select-user-adm">
+                <form action="" id="studentForm" class="select">
+                            <select name="students" id="students">
+                    
+                            </select>
+                            <select name="classes2" id="classes2">
+                                
+                            </select>
+                            <input type="submit" value="Zapisz">
+                </form>
+            </p>
+                    </div>
+    </div>
+    
+
+</div>
 <script src="main.js"></script>
 </body>
 </html>
